@@ -3,12 +3,26 @@ from flask import Flask, redirect, url_for, render_template, request
 from module_db import *
 from module_sim import calculate_matches
 
-
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+  con = db_connect()
+  cur = con.cursor()
+  cur.execute("SELECT * FROM Teams")
+  rows = cur.fetchall()
+  rows.sort(key=lambda tup: tup[3])
+  rows.reverse()
+  headings = ("ID", "Team 1", "Town", "Points")
+
+  cur.execute("SELECT * FROM Tur WHERE ROUND=1")
+  currents = cur.fetchall()
+  cur.execute("SELECT * FROM Tur WHERE ROUND=2")
+  nexts = cur.fetchall()
+
+
+  # return f"<h1>{rows}</h1>"
+  return render_template("index.html", headings=headings, data=rows, currents=currents, nexts=nexts)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
