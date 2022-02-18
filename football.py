@@ -20,9 +20,10 @@ def home():
   cur.execute("SELECT * FROM Tur WHERE ROUND=2")
   nexts = cur.fetchall()
 
+  teams_status = calculate_sim_stats()
 
   # return f"<h1>{rows}</h1>"
-  return render_template("index.html", headings=headings, data=rows, currents=currents, nexts=nexts)
+  return render_template("index.html", headings=headings, data=rows, currents=currents, nexts=nexts, teams_status=teams_status)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -39,7 +40,7 @@ def login():
       if len(rows) <= 16:
         cur.execute("INSERT INTO Teams (NAME, TOWN) VALUES (?,?)", (name, town))
         con.commit()
-        return 'Team added! ' + 'There are ' + str(str(len(rows)) + ' teams in the DB.')
+        return 'Team added! ' + 'There are ' + str(str(len(rows)+1) + ' teams in the DB.')
       else:
         return 'Error: You cannot add more than 16 teams'
    else:
@@ -83,24 +84,31 @@ def ranking():
 if __name__ == "__main__":
   create_tables()
   my_teams = get_teams()
+  current_round = get_current_round()
   print('My teams are:', my_teams)
+  print('Next round is: ', current_round)
+  teams_status = calculate_sim_stats()
+  print(teams_status)
   calculate_matches(my_teams)
 
-# For this to work, table row ID's should be the initial ones
-  var1 = total_rounds()
-  var2 = total_round_matches()
-  ids = []
+  simulate_round(current_round)
 
-  if var2 != 0:
-    for k in range(1, var1*var2, var2):
-      ids.append(k)
 
-  print(ids)
+# # For this to work, table row ID's should be the initial ones
+#   var1 = total_rounds()
+#   var2 = total_round_matches()
+#   ids = []
 
-  # Simulate the whole half season
-  for x in range(1, len(ids) + 1):
-    simulate_round(x, ids[x-1])
+#   if var2 != 0:
+#     for k in range(1, var1*var2, var2):
+#       ids.append(k)
 
-  calculate_points()
+#   print(ids)
+
+#   # Simulate the whole half season
+#   for x in range(1, len(ids) + 1):
+#     simulate_round(x, ids[x-1])
+
+#   calculate_points()
 
   app.run()
