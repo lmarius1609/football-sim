@@ -22,8 +22,15 @@ def home():
 
   teams_status = calculate_sim_stats()
 
+  rounds_status = ''
+  current_round = get_current_round()
+  if current_round[0] != 'empty':
+    rounds_status = 'Next is Round ' + str(current_round[0]) + ' from ' + str(current_round[1])
+  else:
+    rounds_status = 'All rounds allready simulated'  
+
   # return f"<h1>{rows}</h1>"
-  return render_template("index.html", headings=headings, data=rows, currents=currents, nexts=nexts, teams_status=teams_status)
+  return render_template("index.html", headings=headings, data=rows, currents=currents, nexts=nexts, teams_status=teams_status, rounds_status=rounds_status)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -81,17 +88,21 @@ def ranking():
   # return f"<h1>{rows}</h1>"
   return render_template("teams.html", headings=headings, data=rows)
 
+@app.route("/simulate")
+def simulate():
+  current_round = get_current_round()
+  if current_round[0] != 'empty':
+    simulate_round(current_round[0], current_round[1])
+    return 'Next Round Simulated'
+  else:
+    return 'All rounds allready simulated'
+
 if __name__ == "__main__":
   create_tables()
   my_teams = get_teams()
-  current_round = get_current_round()
   print('My teams are:', my_teams)
-  print('Next round is: ', current_round)
   teams_status = calculate_sim_stats()
-  print(teams_status)
   calculate_matches(my_teams)
-
-  simulate_round(current_round)
 
 
 # # For this to work, table row ID's should be the initial ones

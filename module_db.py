@@ -122,10 +122,23 @@ def calculate_sim_stats():
 #     con.commit()
 #     con.close()
 
-def simulate_round(rnd):
-    con = db_connect()
-    cur = con.cursor()
-
+def simulate_round(rnd, which_half):
+	all_goals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	weights = [0.25, 0.2, 0.17, 0.14, 0.11, 0.06, 0.03, 0.02, 0.01, 0.01]
+	
+	con = db_connect()
+	cur = con.cursor()
+	cur.execute("SELECT ID FROM "+which_half+" WHERE ROUND = "+str(rnd))
+	my_table = cur.fetchall()
+	for element in my_table:
+		goals = choices(all_goals, weights)
+		goals = goals[0]
+		cur.execute("UPDATE "+which_half+" SET GOALS1 = (?) WHERE ROUND = (?) AND ID = (?)", (goals, rnd, element[0]))
+		goals = choices(all_goals, weights)
+		goals = goals[0]
+		cur.execute("UPDATE "+which_half+" SET GOALS2 = (?) WHERE ROUND = (?) AND ID = (?)", (goals, rnd, element[0]))
+	con.commit()
+	con.close()
 
 def get_current_round():
 	con = db_connect()
@@ -139,19 +152,19 @@ def get_current_round():
 		print('Tur simulat complet, verificare tabel Retur')
 		cur.execute("SELECT round FROM Retur WHERE GOALS1 IS NULL AND GOALS2 IS NULL LIMIT 1")
 		current_round = cur.fetchone()
-		round_result[1] = ['Retur']
+		round_result[1] = 'Retur'
 		if current_round != None:
 			round_result[0] = current_round[0]
 
 		if current_round == None:
 			print('Tur si Retur simulat complet')
-			round_result[0] = ['empty']
-			round_result[1] = ['empty']
+			round_result[0] = 'empty'
+			round_result[1] = 'empty'
 	else:
 		print('Meci din tabel Tur')
 		round_result[0] = current_round[0]
-		round_result[1] = ['Tur']
+		round_result[1] = 'Tur'
 
 
 	print(round_result[0], round_result[1])
-	return current_round
+	return round_result
