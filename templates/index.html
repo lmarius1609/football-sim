@@ -20,12 +20,12 @@
 	<div class="row">
 	  <div class="col-xs-12 col-sm-6">
 		  <div class="panel panel-success" style="width:800px">
-		  <div class="panel-heading">Current Round</div>
+		  <div class="panel-heading"><h2>Current Round<h2></div>
 		  <div class="panel-body">
 		  </div>
 		  <table class="table">
 			<tr class="table__header">
-				{% for header in headings %}
+				{% for header in headings2 %}
 				<th class="table__cell">{{ header }}</th>			
 				{% endfor %}
 			</tr>
@@ -40,7 +40,7 @@
 		</div>
 	
 		<div class="panel panel-success" style="width:800px">
-			<div class="panel-heading">Next Round</div>
+			<div class="panel-heading"><h2>Next Round</h2></div>
 			<div class="panel-body">
 			</div>
 		<table class="table">
@@ -64,18 +64,18 @@
 	
 	  <div class="col-xs-12 col-sm-6">
 		<div class="panel panel-info" style="width:800px">
-			<div class="panel-heading">League Stats</div>
+			<div class="panel-heading"><h2>League Stats</h2></div>
 			<div class="panel-body">Teams Status: {{ teams_status }} </div>
-			<div class="panel-body">Matches Status:</div>
+			<div class="panel-body">Matches Status: {{ matches_status }} </div>
 			<div class="panel-body">Rounds Status: {{ rounds_status }} </div>
 		  </div>
 
 
 		<div class="panel panel-info" style="width:800px">
-		  <div class="panel-heading">Standings</div>
+		  <div class="panel-heading"><h2>Standings<h2></div>
 		  <table class="table">
 			<tr class="table__header">
-				{% for header in headings %}
+				{% for header in headings1 %}
 				<th class="table__cell">{{ header }}</th>			
 				{% endfor %}
 			</tr>
