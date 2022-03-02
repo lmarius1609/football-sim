@@ -42,12 +42,12 @@ def create_tables():
 	CREATE TABLE IF NOT EXISTS Teams(
 	ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	NAME TEXT NOT NULL,
-    WIN INT,
-	DRAW INT,
-	LOSS INT,
-	GOALS_MARKED INT,
-	GOALS_RECEIVED INT,
-    POINTS INT)"""
+    WIN INT DEFAULT 0,
+	DRAW INT DEFAULT 0,
+	LOSS INT DEFAULT 0,
+	GOALS_MARKED INT DEFAULT 0,
+	GOALS_RECEIVED INT DEFAULT 0,
+    POINTS INT DEFAULT 0)"""
 	cur.execute(customers_sql)
 
 	tur_sql = """
@@ -131,8 +131,11 @@ def calculate_teams_status():
 def calculate_rounds_status():
 	rounds_status = ''
 	current_round = get_next_round()
-	if current_round[0] != 'empty':
+	matches_status = calculate_matches_status()
+	if current_round[0] != 'empty' and matches_status != 'Matches not yet generated':
 		rounds_status = 'Next is Round ' + str(current_round[0]) + ' from ' + str(current_round[1])
+	elif current_round[0] == 'empty' and matches_status == 'Matches not yet generated':
+		rounds_status = 'No round simulated yet'
 	else:
 		rounds_status = 'All rounds allready simulated'  
 	return rounds_status

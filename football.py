@@ -11,40 +11,44 @@ def home():
   cur = con.cursor()
   cur.execute("SELECT * FROM Teams")
   rows = cur.fetchall()
-  # rows.sort(key=lambda tup: tup[3])
-  # rows.reverse()
+  rows.sort(key=lambda tup: tup[7])
+  rows.reverse()
+
   headings1 = ("ID", "Team", "Win", "Draw", "Loss", "Goals Marked", "Goals Received", "Points")
-  headings2 = ("Team 1", "Team 2", "Gols 1", "Goals 2")
+  headings2 = ("Team 1", "Team 2", "Goals 1", "Goals 2")
 
   next_round = get_next_round()
   print('costel', next_round[0],'Gigel', next_round[1])
 
-  cur.execute("SELECT TEAM1, TEAM2, GOALS1, GOALS2 FROM "+next_round[1]+" WHERE ROUND="+str(next_round[0]-1))
-  currents = cur.fetchall()
-  cur.execute("SELECT TEAM1, TEAM2 FROM "+next_round[1]+" WHERE ROUND="+str(next_round[0]))
-  nexts = cur.fetchall()
+  currents = []
+  nexts = []
+
+  if next_round[0] != 'empty':
+    cur.execute("SELECT TEAM1, TEAM2, GOALS1, GOALS2 FROM "+next_round[1]+" WHERE ROUND="+str(next_round[0]-1))
+    currents = cur.fetchall()
+    cur.execute("SELECT TEAM1, TEAM2 FROM "+next_round[1]+" WHERE ROUND="+str(next_round[0]))
+    nexts = cur.fetchall()
 
   teams_status = calculate_teams_status()
   rounds_status = calculate_rounds_status()
   matches_status = calculate_matches_status()
 
-
-  # return f"<h1>{rows}</h1>"
   return render_template("index.html", headings1=headings1, headings2=headings2, data=rows, currents=currents, nexts=nexts, teams_status=teams_status, rounds_status=rounds_status, matches_status=matches_status)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
    if request.method == "POST":
       inp = request.form
-      town = inp["twn"]
+      name = inp["nm"]
 
       con = db_connect()
       cur = con.cursor()
       cur.execute("SELECT * FROM Teams")
       rows = cur.fetchall()
       
+      print('Smantana', type(name))
       if len(rows) <= 10:
-        cur.execute("INSERT INTO Teams (NAME) VALUES (?)", (name))
+        cur.execute("INSERT INTO Teams (NAME) VALUES (?)", (name,))
         con.commit()
         return 'Team added! ' + 'There are ' + str(str(len(rows)+1) + ' teams in the DB.')
       else:
@@ -80,7 +84,7 @@ def ranking():
   cur = con.cursor()
   cur.execute("SELECT * FROM Teams")
   rows = cur.fetchall()
-  rows.sort(key=lambda tup: tup[3])
+  rows.sort(key=lambda tup: tup[7])
   rows.reverse()
 
   headings = ("ID", "Team 1", "Town", "Points")
@@ -90,10 +94,13 @@ def ranking():
 @app.route("/simulate")
 def simulate():
   current_round = get_next_round()
-  if current_round[0] != 'empty':
+  matches_status = calculate_matches_status()
+  if current_round[0] != 'empty' and matches_status != 'Matches not yet generated':
     simulate_round(current_round[0], current_round[1])
     db_add_stats(current_round[0], current_round[1])
     return 'Next Round Simulated'
+  elif current_round[0] == 'empty' and matches_status == 'Matches not yet generated':
+    return 'Cannot simulate, Matches not generated'
   else:
     return 'All rounds allready simulated'
 
