@@ -12,9 +12,17 @@ def home():
   cur.execute("SELECT * FROM Teams")
   rows = cur.fetchall()
   rows.sort(key=lambda tup: tup[7])
+
+  j = 0
+  for i in range(len(rows), 0, -1):
+    rows[j] = list(rows[j])
+    rows[j][0] = i
+    print('gigi', type(rows[j]))
+    j += 1
+
   rows.reverse()
 
-  headings1 = ("ID", "Team", "Win", "Draw", "Loss", "Goals Marked", "Goals Received", "Points")
+  headings1 = ("Pos", "Team", "Win", "Draw", "Loss", "Goals Marked", "Goals Received", "Points")
   headings2 = ("Team 1", "Team 2", "Goals 1", "Goals 2")
 
   next_round = get_next_round()
@@ -35,8 +43,8 @@ def home():
 
   return render_template("index.html", headings1=headings1, headings2=headings2, data=rows, currents=currents, nexts=nexts, teams_status=teams_status, rounds_status=rounds_status, matches_status=matches_status)
 
-@app.route("/login", methods=["POST", "GET"])
-def login():
+@app.route("/add_team", methods=["POST", "GET"])
+def add_team():
    if request.method == "POST":
       inp = request.form
       name = inp["nm"]
@@ -54,7 +62,7 @@ def login():
       else:
         return 'Error: You cannot add more than 10 teams'
    else:
-      return render_template("login.html")
+      return render_template("add_team.html")
 
 @app.route("/teams")
 def teams():
