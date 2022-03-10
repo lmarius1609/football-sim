@@ -121,9 +121,11 @@ def calculate_teams_status():
 	nr_teams = len(cur.fetchall())
 	teams_status = ''
 	if nr_teams < 10:
-		teams_status = 'There are only ' + str(nr_teams) +  ' teams in DB, need more'
+		teams_status = 'Error, there are only ' + str(nr_teams) +  ' teams in DB, need 10'
 	elif nr_teams == 10:
 		teams_status = 'There are 10 Teams in DB, all OK'
+	elif nr_teams > 10:
+		teams_status = 'Error, there are more than 10 Teams in DB'
 
 	con.close()
 	return teams_status

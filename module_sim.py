@@ -1,11 +1,14 @@
 import sqlite3
 from module_db import *
+no_of_teams = 10
 
 def calculate_matches(*args):
     print(type(args))
     print(args[0])
-    if len(args[0]) % 2 != 0:
-        return print('Invalid number of teams')
+    if len(args[0]) != no_of_teams:
+        return 'Error, ' + str(len(args[0])) + ' Teams in DB. There should be exactly ' + str(no_of_teams) + ' Teams'
+
+
         
     teams = list(args[0])
     n = len(teams)
@@ -49,7 +52,7 @@ def calculate_matches(*args):
     rows = cur.fetchall()
     print(len(rows))
     if len(rows) != 0:
-        return print('Match table is already populated')
+        return 'Match table is already populated'
   
     for j in range(len(tur)):
         for k in tur[j]:
@@ -60,3 +63,4 @@ def calculate_matches(*args):
         for k in retur[j]:
             cur.execute("INSERT INTO Retur (ROUND, TEAM1, TEAM2) VALUES (?,?,?)", (j + 1, k[0], k[1]))
     con.commit()
+    return   'Matches were generated and updated in DB'

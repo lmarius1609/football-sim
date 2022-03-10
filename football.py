@@ -86,18 +86,11 @@ def matches():
   # return f"<h1>{rows}</h1>"
   return render_template("teams.html", headings=headings, data=rows)
 
-@app.route("/ranking")
+@app.route("/calculate_matches")
 def ranking():
-  con = db_connect()
-  cur = con.cursor()
-  cur.execute("SELECT * FROM Teams")
-  rows = cur.fetchall()
-  rows.sort(key=lambda tup: tup[7])
-  rows.reverse()
-
-  headings = ("ID", "Team 1", "Town", "Points")
-  # return f"<h1>{rows}</h1>"
-  return render_template("teams.html", headings=headings, data=rows)
+  my_teams = get_teams()
+  try_calculation = calculate_matches(my_teams)
+  return str(try_calculation)
 
 @app.route("/simulate")
 def simulate():
@@ -114,12 +107,9 @@ def simulate():
 
 if __name__ == "__main__":
   create_tables()
-  my_teams = get_teams()
-  print('My teams are:', my_teams)
   next_round = get_next_round()
   print('costel', next_round[0],'Gigel', next_round[1])
   teams_status = calculate_teams_status()
-  calculate_matches(my_teams)
 
 
 # # For this to work, table row ID's should be the initial ones
