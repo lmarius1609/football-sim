@@ -25,7 +25,7 @@ class Team:
         result = {'win': self.win, 'draw': self.draw, 'loss': self.loss, 'goals_marked': self.goals_marked, 'goals_received': self.goals_received, 'points': self.points}
         return result
 
-def db_connect(db_path='marius_db'):
+def db_connect(db_path='/home/marius/work-okr/football-sim/marius_db'):
 	con = None
 	try:
 		con = sqlite3.connect(db_path)
@@ -72,6 +72,19 @@ def create_tables():
 
 	con.commit()
 	con.close()
+
+def add_team(name):
+	con = db_connect()
+	cur = con.cursor()
+	cur.execute("SELECT * FROM Teams")
+	rows = cur.fetchall()
+      
+	if len(rows) <= 9:
+		cur.execute("INSERT INTO Teams (NAME) VALUES (?)", (name,))
+		con.commit()
+		return 'Team added! ' + 'There are ' + str(str(len(rows)+1) + ' teams in the DB.')
+	else:
+		return 'Error: You cannot add more than 10 teams'
 
 def get_teams():
 	con = db_connect()
@@ -205,9 +218,9 @@ def db_add_stats(rnd, which_half):
 		cur.execute("UPDATE TEAMS SET POINTS = POINTS + (?) WHERE NAME = (?)", (stats_2['points'], element[1]))
 		con.commit()
 
-		print('Sandel', element)
-		print('Sandel', stats_1)
-		print('Sandel', stats_2)	
+		# print('Sandel', element)
+		# print('Sandel', stats_1)
+		# print('Sandel', stats_2)	
 
 def get_next_round():
 	con = db_connect()
@@ -216,7 +229,7 @@ def get_next_round():
 
 	cur.execute("SELECT round FROM Tur WHERE GOALS1 IS NULL AND GOALS2 IS NULL LIMIT 1")
 	current_round = cur.fetchone()
-	print('Costel', current_round)
+	# print('Costel', current_round)
 	if current_round == None:
 		print('Tur simulat complet, verificare tabel Retur')
 		cur.execute("SELECT round FROM Retur WHERE GOALS1 IS NULL AND GOALS2 IS NULL LIMIT 1")
@@ -235,5 +248,5 @@ def get_next_round():
 		round_result[1] = 'Tur'
 
 
-	print(round_result[0], round_result[1])
+	# print(round_result[0], round_result[1])
 	return round_result

@@ -3,8 +3,8 @@ from module_db import *
 no_of_teams = 10
 
 def calculate_matches(*args):
-    print(type(args))
-    print(args[0])
+    # print(type(args))
+    # print(args[0])
     if len(args[0]) != no_of_teams:
         return 'Error, ' + str(len(args[0])) + ' Teams in DB. There should be exactly ' + str(no_of_teams) + ' Teams'
 
@@ -50,7 +50,7 @@ def calculate_matches(*args):
     cur = con.cursor()
     cur.execute("SELECT * FROM Tur")
     rows = cur.fetchall()
-    print(len(rows))
+    # print(len(rows))
     if len(rows) != 0:
         return 'Match table is already populated'
   
@@ -58,7 +58,6 @@ def calculate_matches(*args):
         for k in tur[j]:
             cur.execute("INSERT INTO Tur (ROUND, TEAM1, TEAM2) VALUES (?,?,?)", (j + 1, k[0], k[1]))
 
-    print()
     for j in range(len(retur)):
         for k in retur[j]:
             cur.execute("INSERT INTO Retur (ROUND, TEAM1, TEAM2) VALUES (?,?,?)", (j + 1, k[0], k[1]))

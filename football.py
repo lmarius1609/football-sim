@@ -17,7 +17,7 @@ def home():
   for i in range(len(rows), 0, -1):
     rows[j] = list(rows[j])
     rows[j][0] = i
-    print('gigi', type(rows[j]))
+    # print('gigi', type(rows[j]))
     j += 1
 
   rows.reverse()
@@ -26,7 +26,7 @@ def home():
   headings2 = ("Team 1", "Team 2", "Goals 1", "Goals 2")
 
   next_round = get_next_round()
-  print('costel', next_round[0],'Gigel', next_round[1])
+  # print('costel', next_round[0],'Gigel', next_round[1])
 
   currents = []
   nexts = []
@@ -44,23 +44,12 @@ def home():
   return render_template("index.html", headings1=headings1, headings2=headings2, data=rows, currents=currents, nexts=nexts, teams_status=teams_status, rounds_status=rounds_status, matches_status=matches_status)
 
 @app.route("/add_team", methods=["POST", "GET"])
-def add_team():
+def add_new_team():
    if request.method == "POST":
       inp = request.form
       name = inp["nm"]
-
-      con = db_connect()
-      cur = con.cursor()
-      cur.execute("SELECT * FROM Teams")
-      rows = cur.fetchall()
-      
-      print('Smantana', type(name))
-      if len(rows) <= 10:
-        cur.execute("INSERT INTO Teams (NAME) VALUES (?)", (name,))
-        con.commit()
-        return 'Team added! ' + 'There are ' + str(str(len(rows)+1) + ' teams in the DB.')
-      else:
-        return 'Error: You cannot add more than 10 teams'
+      return_text = add_team(name)
+      return return_text
    else:
       return render_template("add_team.html")
 
@@ -108,7 +97,7 @@ def simulate():
 if __name__ == "__main__":
   create_tables()
   next_round = get_next_round()
-  print('costel', next_round[0],'Gigel', next_round[1])
+  # print('costel', next_round[0],'Gigel', next_round[1])
   teams_status = calculate_teams_status()
 
 
